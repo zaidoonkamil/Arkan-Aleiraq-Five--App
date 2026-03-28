@@ -205,14 +205,62 @@ class HomeAdmin extends StatelessWidget {
                                         ? cubit.getAdsModel.expand<Widget>((GetAds ad) =>
                                         ad.images.map<Widget>((String imageUrl) => Builder(
                                           builder: (BuildContext context) {
-                                            String formattedDate =
-                                            DateFormat('yyyy/M/d').format(ad.createdAt);
-                                            return ClipRRect(
-                                              borderRadius: BorderRadius.circular(8.0),
-                                              child: Image.network(
-                                                "$url/uploads/$imageUrl",
-                                                fit: BoxFit.cover,
-                                                width: double.infinity,
+                                            double? progress = cubit.mediaDownloadProgress[imageUrl];
+                                            bool isDownloading = progress != null;
+                                            return GestureDetector(
+                                              onTap: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) => Dialog(
+                                                    backgroundColor: Colors.transparent,
+                                                    insetPadding: const EdgeInsets.all(10),
+                                                    child: GestureDetector(
+                                                      onTap: () => Navigator.pop(context),
+                                                      child: InteractiveViewer(
+                                                        child: Image.network("$url/uploads/${imageUrl}", fit: BoxFit.contain),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              child: Stack(
+                                                children: [
+                                                  ClipRRect(
+                                                    borderRadius: BorderRadius.circular(8.0),
+                                                    child: Image.network(
+                                                      "$url/uploads/$imageUrl",
+                                                      fit: BoxFit.cover,
+                                                      width: double.infinity,
+                                                    ),
+                                                  ),
+                                                  Positioned(
+                                                    top: 8,
+                                                    right: 8,
+                                                    child: isDownloading
+                                                        ? Container(
+                                                            padding: const EdgeInsets.all(4),
+                                                            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                                            child: Stack(
+                                                              alignment: Alignment.center,
+                                                              children: [
+                                                                CircularProgressIndicator(value: progress, strokeWidth: 3, color: primaryColor),
+                                                                Text(
+                                                                  "${(progress * 100).toInt()}%",
+                                                                  style: const TextStyle(fontSize: 9, color: primaryColor, fontWeight: FontWeight.bold),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          )
+                                                        : GestureDetector(
+                                                            onTap: () => cubit.downloadMediaOnly(context: context, mediaUrl: imageUrl, isVideo: false),
+                                                            child: Container(
+                                                              padding: const EdgeInsets.all(4),
+                                                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                                              child: Icon(Icons.download, color: primaryColor, size: 22),
+                                                            ),
+                                                          ),
+                                                  ),
+                                                ],
                                               ),
                                             );
                                           },

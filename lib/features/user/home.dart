@@ -2,7 +2,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import '../../../core/widgets/app_bar.dart';
 import '../../../core/widgets/constant.dart';
@@ -26,7 +25,9 @@ class HomeUser extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => AppCubit()
-        ..getProducts(context: context)..getAds(context: context),
+        ..getProducts(context: context)
+        ..getAds(context: context)
+        ..getDesc(context: context),
       child: BlocConsumer<AppCubit,AppStates>(
         listener: (context,state){},
         builder: (context,state){
@@ -54,24 +55,73 @@ class HomeUser extends StatelessWidget {
                                           ? cubit.getAdsModel.expand<Widget>((GetAds ad) =>
                                           ad.images.map<Widget>((String imageUrl) => Builder(
                                             builder: (BuildContext context) {
-                                              String formattedDate =
-                                              DateFormat('yyyy/M/d').format(ad.createdAt);
-                                              return Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(8),
-                                                  border: Border.all(
-                                                    color: primaryColor,
-                                                    width: 1,
+                                              double? progress = cubit.mediaDownloadProgress[imageUrl];
+                                              bool isDownloading = progress != null;
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) => Dialog(
+                                                      backgroundColor: Colors.transparent,
+                                                      insetPadding: const EdgeInsets.all(10),
+                                                      child: GestureDetector(
+                                                        onTap: () => Navigator.pop(context),
+                                                        child: InteractiveViewer(
+                                                          child: Image.network("$url/uploads/${imageUrl}", fit: BoxFit.contain),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(8),
+                                                    border: Border.all(
+                                                      color: primaryColor,
+                                                      width: 1,
+                                                    ),
                                                   ),
-                                                ),
-                                                child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(8.0),
-                                                  child: Image.network(
-                                                    "$url/uploads/$imageUrl",
-                                                    fit: BoxFit.cover,
-                                                    width: double.infinity,
+                                                  child: Stack(
+                                                    children: [
+                                                      ClipRRect(
+                                                        borderRadius: BorderRadius.circular(8.0),
+                                                        child: Image.network(
+                                                          "$url/uploads/$imageUrl",
+                                                          fit: BoxFit.cover,
+                                                          width: double.infinity,
+                                                        ),
+                                                      ),
+                                                      Positioned(
+                                                        top: 8,
+                                                        right: 8,
+                                                        child: isDownloading
+                                                            ? Container(
+                                                                padding: const EdgeInsets.all(4),
+                                                                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                                                child: Stack(
+                                                                  alignment: Alignment.center,
+                                                                  children: [
+                                                                    CircularProgressIndicator(value: progress, strokeWidth: 3, color: primaryColor),
+                                                                    Text(
+                                                                      "${(progress * 100).toInt()}%",
+                                                                      style: const TextStyle(fontSize: 9, color: primaryColor, fontWeight: FontWeight.bold),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              )
+                                                            : GestureDetector(
+                                                                onTap: () => cubit.downloadMediaOnly(context: context, mediaUrl: imageUrl, isVideo: false),
+                                                                child: Container(
+                                                                  padding: const EdgeInsets.all(4),
+                                                                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                                                  child: Icon(Icons.download, color: primaryColor, size: 22),
+                                                                ),
+                                                              ),
+                                                      ),
+                                                    ],
+                                                    ),
                                                   ),
-                                                ),
                                               );
                                             },
                                           )),
@@ -122,6 +172,24 @@ class HomeUser extends StatelessWidget {
                               fallback: (c)=> Container(),
                             ),
                           ),
+                          SizedBox(height: 10,),
+                          cubit.details != null && cubit.details != '' ? Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                            padding: const EdgeInsets.all(8),
+                            width: double.maxFinite,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: borderColor,
+                                width: 1.0,
+                              ),
+                              color: containerColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: cubit.details!.split('  ').map((e) => Text(e.trim())).toList(),
+                            ),
+                          ) : Container(),
                           SizedBox(height: 10,),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16.0),
