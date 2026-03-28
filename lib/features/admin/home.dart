@@ -177,24 +177,6 @@ class HomeAdmin extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 10,),
-                          cubit.details != null && cubit.details != '' ? Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-                            padding: const EdgeInsets.all(8),
-                            width: double.maxFinite,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: borderColor,
-                                width: 1.0,
-                              ),
-                              color: containerColor,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: cubit.details!.split('  ').map((e) => Text(e.trim())).toList(),
-                            ),
-                          ) : Container(),
-                          SizedBox(height: 10,),
                           ConditionalBuilder(
                             condition:cubit.getAdsModel.isNotEmpty,
                             builder:(c){

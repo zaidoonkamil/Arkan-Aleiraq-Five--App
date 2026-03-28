@@ -1,4 +1,6 @@
 import 'package:arkan_aleiraq_five_app/core/%20navigation/navigation.dart';
+import 'package:arkan_aleiraq_five_app/core/styles/themes.dart';
+import 'package:arkan_aleiraq_five_app/features/user/ditals_decument.dart';
 import 'package:flutter/material.dart';
 
 import 'constant.dart';
@@ -23,9 +25,22 @@ class CustomAppBar extends StatelessWidget {
         ],
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Container(
+            width: 40,
+            height: 40,
+          ),
           Image.asset('assets/images/$logo',height: 40,width: 40,),
+          InkWell(
+            onTap: (){
+              navigateTo(context, DitalsDecument());
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: Icon(Icons.text_snippet_outlined,color: primaryColor,),
+            ),
+          )
         ],
       ),
     );
