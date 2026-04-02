@@ -32,7 +32,8 @@ class AppCubit extends Cubit<AppStates> {
     final List<XFile> resultList = await picker.pickMultiImage();
 
     if (resultList.isNotEmpty) {
-      selectedImages = resultList;
+      final seen = <String>{};
+      selectedImages = resultList.where((f) => seen.add(f.name)).toList();
       emit(SelectedImagesState());
     }
   }
@@ -43,7 +44,8 @@ class AppCubit extends Cubit<AppStates> {
     final List<XFile> resultList = await picker.pickMultiImage();
 
     if (resultList.isNotEmpty) {
-      attachedImages = resultList;
+      final seen = <String>{};
+      attachedImages = resultList.where((f) => seen.add(f.name)).toList();
       emit(SelectedImagesState());
     }
   }

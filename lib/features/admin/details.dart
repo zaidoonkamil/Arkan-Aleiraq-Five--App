@@ -32,6 +32,7 @@ class DetailsAdmin extends StatelessWidget {
   final List<String>? attachedVideos;
   final List<String>? attachedImages;
   final List<String> mainImages = [];
+  bool _imagesInitialized = false;
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +40,6 @@ class DetailsAdmin extends StatelessWidget {
       create: (BuildContext context) => AppCubit(),
       child: BlocConsumer<AppCubit, AppStates>(
           listener: (context, state) {
-            if(mainImages.isEmpty && images != null && images!.isNotEmpty) {
-              mainImages.addAll(images!);
-            }
             if(state is UpdateVariantsSuccessState){
               showToastSuccess(
                 text: 'تم الامر بنجاح',
@@ -71,8 +69,9 @@ class DetailsAdmin extends StatelessWidget {
           },
           builder: (context, state) {
             var cubit=AppCubit.get(context);
-            if(mainImages.isEmpty && images != null && images!.isNotEmpty) {
+            if(!_imagesInitialized && images != null && images!.isNotEmpty) {
               mainImages.addAll(images!);
+              _imagesInitialized = true;
             }
             return WillPopScope(
               onWillPop: () async {

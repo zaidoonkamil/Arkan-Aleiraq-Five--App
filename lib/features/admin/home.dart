@@ -325,7 +325,9 @@ class HomeAdmin extends StatelessWidget {
                               physics: NeverScrollableScrollPhysics(),
                               itemCount: cubit.getProductsModel.length,
                               itemBuilder:(context,index){
-                                String rawImageUrl = cubit.getProductsModel[index].images[0];
+                                final imgs = cubit.getProductsModel[index].images;
+                                if (imgs.isEmpty) return const SizedBox.shrink();
+                                String rawImageUrl = imgs[0];
                                 String cleanImageUrl = rawImageUrl.replaceAll(RegExp(r'[\[\]]'), '');
                                 return Column(
                                   children: [

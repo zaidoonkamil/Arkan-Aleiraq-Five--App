@@ -138,7 +138,7 @@ class UsersStatus extends StatelessWidget {
                                                     ),
                                                   ],
                                                 ),
-                                                Row(
+                                                if (cubit.userStatusModel!.users[index].tasks.isNotEmpty) Row(
                                                   mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
                                                     Text(
@@ -158,7 +158,7 @@ class UsersStatus extends StatelessWidget {
                                                   ],
                                                 ),
 
-                                                Row(
+                                                if (cubit.userStatusModel!.users[index].tasks.isNotEmpty) Row(
                                                   mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
                                                     Text(
